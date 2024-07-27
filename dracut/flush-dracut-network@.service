@@ -9,7 +9,7 @@ Wants=network-pre.target
 
 [Service]
 ExecStartPre=/usr/sbin/ip address show %i
-ExecStart=/opt/creic-server-scripts/flush-dracut-network.sh -v %i
+ExecStart=/opt/creic-server-scripts/dracut/flush-dracut-network.sh -v %i
 
 [Install]
 WantedBy=default.target
