@@ -106,7 +106,6 @@ while [ $# -gt 0 ]; do
                              exit 1
                          fi
 
-                         echo $(check_ip $ipCD)
                          if [[ ! $(check_ip $ipCD) -eq 1 ]]; then
                             echo "Invalid IP. Only give the last two octets of the IP." >&2
                             echo "E.g., --ip=208.15, not --ip=10.202.208.15"
