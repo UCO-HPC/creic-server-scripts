@@ -162,7 +162,8 @@ install --owner=root --group=root --mode=644 ./99-cmdline.conf /etc/dracut.conf.
 dracut -f --regenerate-all
 
 # Setup and install flush-dracut service for OOB
-chmod u+x ./flush-dracut-network.sh
+mkdir -p /usr/lib/creic
+install --owner=root --group=root --mode=744 ./flush-dracut-network.sh /usr/lib/creic/
 install --owner=root --group=root --mode=644 ./flush-dracut-network@.service /etc/systemd/system/
 systemctl daemon-reload
 systemctl enable flush-dracut-network@$oob_int
