@@ -1,0 +1,9 @@
+[Unit]
+Description=Generate System Info for MotD
+
+[Service]
+Type=oneshot
+ExecStart=/bin/bash -c '/usr/lib/creic/system-info-motd.sh > /etc/motd.d/00-system-info'
+
+[Install]
+WantedBy=default.target

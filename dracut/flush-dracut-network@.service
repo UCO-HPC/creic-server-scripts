@@ -8,6 +8,7 @@ Before=network-pre.target
 Wants=network-pre.target
 
 [Service]
+Type=oneshot
 ExecStartPre=/usr/sbin/ip address show %i
 ExecStart=/usr/lib/creic/flush-dracut-network.sh -v %i
 

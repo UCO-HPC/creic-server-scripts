@@ -36,7 +36,10 @@ flush_connection()
       then
           echo rm /run/NetworkManager/system-connections/$1.nmconnection
    fi
-   rm /run/NetworkManager/system-connections/$1.nmconnection
+   if [ -f /run/NetworkManager/system-connections/$1.nmconnection ]
+      then
+        rm /run/NetworkManager/system-connections/$1.nmconnection
+   fi
 }
 
 ################################################################################
