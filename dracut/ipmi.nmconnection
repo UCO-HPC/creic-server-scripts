@@ -15,6 +15,6 @@ method=manual
 
 [ipv6]
 addr-gen-mode=eui64
-method=auto
+method=disabled
 
 [proxy]
