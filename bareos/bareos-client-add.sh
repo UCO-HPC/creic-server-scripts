@@ -25,8 +25,8 @@ fi
 
 echo 'Storage {
   Name = '"${servername^}"'Storage
-  Address = '"${storageaddress}"' # storage IP address
-  Password = '"${dirpass}"'
+  Address = '"\"${storageaddress}\""' # storage IP address
+  Password = '"\"${dirpass}\""'
   Device = '"${servername^}"'FileStorage
   Media Type = File
 }
@@ -61,7 +61,7 @@ echo 'Job {
 echo 'Client {
   Name = '"${servername}"'-fd
   Address = '"\"${serveraddress}\""'
-  Password = '"${pass}"'
+  Password = '"\"${pass}\""'
 }
 ' > /etc/bareos/bareos-dir.d/client/${servername}-fd.conf
 
