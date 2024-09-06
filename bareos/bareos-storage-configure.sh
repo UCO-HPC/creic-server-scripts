@@ -16,10 +16,11 @@ echo 'Device {
   AlwaysOpen = no;
   Description = "File device. A connecting Director must have the same Name and MediaType."
 }
-' > /etc/bareos/bareos-sd.d/device/"${servername^}"FileStorage
+' > /etc/bareos/bareos-sd.d/device/"${servername^}"FileStorage.conf
 
 mkdir /mnt/backup/bareos/${servername}
-chown +R bareos:bareos /mnt/backup/bareos/${servername}
+chown -R bareos:bareos /mnt/backup/bareos/${servername}
+systemctl restart bareos-sd
 
 echo "Backup directory created at /mnt/backup/bareos/${servername}"
-echo "Storage device configured at /etc/bareos/bareos-sd.d/device/${servername^}FileStorage"
+echo "Storage device configured at /etc/bareos/bareos-sd.d/device/${servername^}FileStorage.conf"
