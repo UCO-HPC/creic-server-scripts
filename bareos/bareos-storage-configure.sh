@@ -19,5 +19,7 @@ echo 'Device {
 ' > /etc/bareos/bareos-sd.d/device/"${servername^}"FileStorage
 
 mkdir /mnt/backup/bareos/${servername}
+chown +R bareos:bareos /mnt/backup/bareos/${servername}
+
 echo "Backup directory created at /mnt/backup/bareos/${servername}"
 echo "Storage device configured at /etc/bareos/bareos-sd.d/device/${servername^}FileStorage"
