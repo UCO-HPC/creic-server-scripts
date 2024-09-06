@@ -1,4 +1,6 @@
 #!/bin/bash
+# BareOS Storage config script by Ryan Maher
+# WARNING: An inexperienced bash scripter scripted this script, so use with caution!
 
 echo "Enter server name (lowercase):"
 read servername
@@ -16,4 +18,4 @@ echo 'Device {
 }
 ' > /etc/bareos/bareos-sd.d/device/"${servername^}"FileStorage
 
-echo "Storage device configured at /etc/bareos/bareos-sd.d/device/"${servername^}"FileStorage
+echo "Storage device configured at /etc/bareos/bareos-sd.d/device/${servername^}FileStorage"
