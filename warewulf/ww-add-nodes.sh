@@ -1,6 +1,7 @@
 #!/bin/bash
 # Warewulf node add script by Ryan Maher
 # Adds nodes from a CSV file including the MAC address of the network interface.
+# Needs a csv file to be passed as an argument when running, more details in documentation
 
 file="$1"
 echo -n "Enter the node number of the first node (Ex: for node-201, enter 201): "
