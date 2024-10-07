@@ -1,7 +1,7 @@
 #!/bin/bash
 # Warewulf node add script by Ryan Maher
 # Adds nodes from a CSV file including the MAC address of the network interface.
-# Needs a csv file to be passed as an argument when running, more details in documentation
+# Needs a csv file to be passed as an argument when running, more details in documentation on GLPI
 
 file="$1"
 echo -n "Enter the node number of the first node (Ex: for node-201, enter 201): "
@@ -31,7 +31,9 @@ else
     exit
 fi
 
-echo "First node will be: node-${nodenum}"
+echo 'First node will be: node-'$nodenum'
+      With an IP address of: 10.200.'$cval.$dval'
+      Profile: '$profile''
 
 echo -n "Proceed? [y/n]: "
 read proceed
@@ -53,4 +55,3 @@ do
 	((nodenum+=1))
 	((dval+=1))
 done < <(tail -n +3 "$file")
-
