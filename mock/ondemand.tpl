@@ -2,7 +2,7 @@ config_opts['description'] += " + OnDemand"
 
 # Install packages for Open OnDemand
 config_opts['chroot_additional_packages'] += """
-    nmap-ncat turbovnc python3-websockify
+    nmap-ncat turbovnc python3-websockify squashfs-tools-ng singularity-ce
 """
 
 config_opts['dnf.conf'] += """
