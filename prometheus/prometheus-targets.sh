@@ -1,6 +1,6 @@
 #!/bin/bash
 # Prometheus node add script by Ryan Maher
-# Appends compute nodes to END prometheus config file as individual targets with label = node name
+# Adds compute nodes as targets with labels to END prometheus config file
 # The "nodes" job must be the last listed job in the config file since this script appends to the end of the file.
 
 echo -n "Enter the number of the first node to add (Ex: for node-205, enter 205): "
