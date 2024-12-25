@@ -2,7 +2,8 @@ config_opts['description'] += " + OnDemand"
 
 # Install packages for Open OnDemand
 config_opts['chroot_additional_packages'] += """
-    nmap-ncat turbovnc python3-websockify squashfs-tools-ng singularity-ce
+    nmap-ncat turbovnc python3-websockify xfce4-session xfwm4 
+    xfdesktop libGL xfce4-settings
 """
 
 config_opts['dnf.conf'] += """
