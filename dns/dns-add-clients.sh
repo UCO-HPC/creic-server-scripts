@@ -164,7 +164,19 @@ then
 
         filecontents="$(echo "$header ""$existingEntries ""$footer")"
 
+	# Comment out first line when testing output
         echo "$filecontents" > /var/named/hpc.uco.edu
+	# echo "$filecontents" > test-output.txt
+
+        echo "Restart named service? (Y) (N)"
+        read confirm
+
+        if [[ "${confirm,}" == "y" ]]; then
+        	sudo systemctl restart named
+        	echo "named restarted"
+	fi
+
+	echo "Done."
 
 fi
 
@@ -174,7 +186,7 @@ if [[ $option -eq 2 ]]
         file="$1"
 
         echo "Option 2 selected."
-        echo "Ensure that the Alternate Username is included in the list:\n"
+        echo "Ensure that the Alternate Username is included in the list:"
         echo " "
         echo "View CSV file? (y) (n)"
         read view
@@ -190,24 +202,6 @@ if [[ $option -eq 2 ]]
                         exit
                 fi
         fi
-
-        # echo "Enter the last two octets of the first node (ex: for node-201 enter 2.1):"
-        # read lastTwoOctets
-
-        #echo '
-        #First node:
-        #IPMI:       10.200.'$lastTwoOctets'
-        #IB:         10.201.'$lastTwoOctets'
-        #OOB:        10.202.'$lastTwoOctets'
-        #'
-
-        #echo "Confirm? (Y) (N):"
-        #read confirm
-
-        # Converts input to lowercase
-        #if [[ "${confirm,}" == "n" ]]; then
-        #        exit
-        #fi
 
         echo "Adding DNS entries..."
 
@@ -230,6 +224,17 @@ if [[ $option -eq 2 ]]
 
         filecontents="$(echo "$header ""$existingEntries ""$footer")"
 
-        echo "$filecontents" > /var/named/hpc.uco.edu
+        # Comment out first line when testing output
+	echo "$filecontents" > /var/named/hpc.uco.edu
+	# echo "$filecontents" > test-output.txt
 
+
+	echo "Restart named service? (Y) (N)"
+        read confirm
+
+        if [[ "${confirm,}" == "y" ]]; then
+                sudo systemctl restart named
+        	echo "named restarted"
+	fi
+	echo "Done."
 fi
