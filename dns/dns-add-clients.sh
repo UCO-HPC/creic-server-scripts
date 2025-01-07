@@ -182,7 +182,13 @@ fi
 
 if [[ $option -eq 2 ]]
 
-        then
+        if [ "$#" -eq 0 ]
+	then
+  		echo "No CSV file supplied"
+  		exit 1
+	fi
+
+	then
         file="$1"
 
         echo "Option 2 selected."
