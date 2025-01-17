@@ -1,0 +1,228 @@
+#!/usr/bin/python3
+#
+# --- IPA User Add script by Ryan Maher ---
+# 
+# NOTE: This script is meant to run on storage-01 in order to create home directories for added users.
+#
+# INSTRUCTIONS:
+#
+#   To provide a CSV file, use the --file flag (ex: ./python-ipa-script --file students.csv)
+#   The format of the CSV file is expected to be: username, email, firstname, lastname, lastterm
+#   The first line of the CSV file (column names) will be skipped when parsing
+#
+#   If no CSV file is provided, the script will ask for a single user's details to add to IPA and if
+#   that user should be added to an IPA group.
+# 
+#   If a CSV file is provided, the script will add each user listed and will ask if they should all
+#   be added to a group. 
+#
+#   In both cases, the option to create a homespace is given as a yes or no before proceeding.
+#
+#   If a group does not exist, it will be created. Otherwise, the user(s) will be added to the existing group.
+#
+#   The option to create a shared group folder is provided
+#
+#   The script outputs to the current directory a list of users added with their 
+#   one-time random passwords in a "userlist.txt" file
+
+# -- Initialization -- #
+
+# Import packages
+from python_freeipa import ClientLegacy
+import argparse
+import csv
+import pyinputplus as pyip
+import os
+import random
+import string
+
+# FreeIPA API initialization
+client = ClientLegacy('ipa.hpc.uco.edu', version='2.254')
+client.login('admin', os.environ['ipa_admin_pass'])
+
+# Create user list to write out to
+f = open("userlist.txt", "a")
+
+# Set up CSV argument parser
+parser = argparse.ArgumentParser(description="Process a CSV file.")
+parser.add_argument("--file", type=str, help="Path to the CSV file")
+
+# Parse arguments
+args = parser.parse_args()
+
+# random password length
+pass_length = 8
+
+# -- End of Initialization -- #
+
+
+# -- Function Definitions -- #
+
+# Generates password with random letters and numbers of length pass_length
+def generate_password():
+    return ''.join(random.choices(string.ascii_letters + string.digits, k=pass_length))
+
+# make home space in /export/home/<username>
+def makehomespaces(username):
+    os.system('sudo mkdir /export/home/' + username)
+    print("Created directory /export/home/" + username)
+
+# Add user to group
+def group_add_user(username, groupname):
+    print("Adding " + username + " to group " + groupname)
+    client.group_add_member(groupname, user=username, no_members=True)
+
+# Create shared folder and set permissions
+def create_shared_folder(groupname):
+    
+    print("Creating shared group folder...")
+    os.system('sudo mkdir /export/shared/' + groupname)
+    
+    # chgrp group-name /export/shared/folder-name
+    os.system('sudo chgrp ' + groupname + ' /export/shared/' + groupname)
+    
+    # chmod 2770 /export/shared/folder-name
+    os.system('sudo chmod 2770 /export/shared/' + groupname)
+    
+    # setfacl -m d:u::rwx,d:g::rwx,d:o::--- /export/shared/folder-name
+    os.system('sudo setfacl -m d:u::rwx,d:g::rwx,d:o::--- /export/shared/' + groupname)
+
+# Read and process the CSV file if given
+# Begins adding users from CSV and exports a list of usernames that need home directories created on storage-01
+def csv_add():
+    
+    print("CSV file provided, adding users from list...\n")
+    
+    group_confirm = pyip.inputYesNo("Would you like to add these users to a group? (y) (n): ")
+    group_folder_confirm = pyip.inputYesNo("Would you like to create a shared folder for this group? (y) (n): ")
+    
+    if group_confirm == 'yes':
+        
+        groupname = pyip.inputStr('Enter group name: ')
+        result = client.group_find(cn=groupname)
+
+        if result['count'] == 0:
+        
+            print("No groups found, creating new group...\n")
+            print("Group: " + groupname)
+
+            groupdesc = pyip.inputStr('\nPlease enter a brief group description: ')
+
+            # create group
+            client.group_add(groupname, groupdesc)
+
+    if group_folder_confirm == 'yes':
+        create_shared_folder(groupname)
+        
+    makehomespaces_confirm = pyip.inputYesNo("\nWould you like to create homespaces for each user automatically? (y) (n): ")
+
+    try:
+        with open(args.file, mode='r') as csv_file:
+            
+            reader = csv.reader(csv_file)
+            next(reader)
+            
+            for row in reader:
+
+                # generate random password for each user with length "length"
+                random_string = generate_password()
+                username, email, firstname, lastname, lastterm = row
+                fullname = firstname + " " + lastname
+
+                # For testing or if you added the wrong list, comment out user_add and uncomment user_del
+                client.user_add(username, firstname, lastname, fullname, mail = email, userpassword=random_string)
+                # client.user_del(username)
+
+                # append username to list
+                f.write(username + " " + random_string + '\n')
+
+                print(username + " " + random_string)
+
+                if group_confirm == 'yes':
+                    group_add_user(username, groupname)
+                
+                if makehomespaces_confirm == 'yes':
+                    makehomespaces(username)
+
+                if group_folder_confirm == 'yes':
+                    # create group folder symlink to user's home directory
+                    os.system('ln -s /shared/hpc /export/home/' + username + '/' + groupname)
+
+    except FileNotFoundError:
+        print(f"Error: The file '{args.file}' was not found.")
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+# Asks for information to add a single user
+def single_user_add():
+
+    print("No CSV file provided, adding single user...\n")
+    print("Please provide user details below:\n")
+
+    # pyip prevents user from making blank entries
+    username = pyip.inputStr('Enter username: ')
+    firstname = pyip.inputStr('Enter first name: ')
+    lastname = pyip.inputStr('Enter last name: ')
+    email = pyip.inputStr('Enter email: ')
+
+    fullname = firstname + " " + lastname
+    print("\nEntered Details: ")
+    print("Username: " + username)
+    print("Name: " + fullname)
+    print("Email: " + email)
+
+    # Ask user for group name
+    group_confirm = pyip.inputYesNo("\nWould you like to add this user to a group? (y) (n): ")
+    
+    # Ask if homespace needs to be made
+    makehomespaces_confirm = pyip.inputYesNo("\nWould you like to create the homespace? (y) (n): ")
+
+    if group_confirm == 'yes':
+
+        groupname = pyip.inputStr('Enter group name: ')
+        result = client.group_find(cn=groupname)
+        
+        # print("group_find result: ")
+        # print(result)
+
+        if result['count'] == 0:
+            
+            print("No groups found, creating new group...\n")
+            print("Creating group: " + groupname)
+
+            groupdesc = pyip.inputStr('\nEnter brief group description: ')
+
+            # create group
+            client.group_add(groupname, groupdesc)
+
+    # Ask to proceed with given information
+    confirm = pyip.inputYesNo('\nProceed? (y) (n): ')
+
+    if confirm == 'yes':
+
+        print("Adding user " + username + '\n')
+        random_string = generate_password()
+        client.user_add(username, firstname, lastname, fullname, mail = email, userpassword=random_string)
+        
+        if group_confirm == 'yes':
+            group_add_user(username, groupname)
+
+        # add user to userlist to have their home space created on storage-01
+        f.write(username + " " + random_string + "\n")
+        
+        if makehomespaces_confirm == 'yes':
+            makehomespaces(username)
+
+        print("User added: " + username + " " + random_string)
+
+# -- End of Function Definitions -- #
+
+# -- Main -- #
+
+if args.file:
+    csv_add()
+else:
+    single_user_add()
+    
+print("\nA list of added users and their one-time use passwords has been written to \"userlist.txt\" in the current directory.")
+print("\nDone.")
