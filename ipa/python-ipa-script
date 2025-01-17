@@ -6,7 +6,10 @@
 #
 # INSTRUCTIONS:
 #
-#   To provide a CSV file, use the --file flag (ex: ./python-ipa-script --file students.csv)
+#   To run the script: sudo -E ./python-ipa-script
+#   the -E flag is required to get the ipa password environment variable
+#
+#   To provide a CSV file, use the --file flag (ex: sudo -E ./python-ipa-script --file students.csv)
 #   The format of the CSV file is expected to be: username, email, firstname, lastname, lastterm
 #   The first line of the CSV file (column names) will be skipped when parsing
 #
@@ -94,7 +97,6 @@ def csv_add():
     print("CSV file provided, adding users from list...\n")
     
     group_confirm = pyip.inputYesNo("Would you like to add these users to a group? (y) (n): ")
-    group_folder_confirm = pyip.inputYesNo("Would you like to create a shared folder for this group? (y) (n): ")
     
     if group_confirm == 'yes':
         
@@ -111,9 +113,11 @@ def csv_add():
             # create group
             client.group_add(groupname, groupdesc)
 
-    if group_folder_confirm == 'yes':
-        create_shared_folder(groupname)
-        
+        group_folder_confirm = pyip.inputYesNo("Would you like to create a shared folder for this group? (y) (n): ")
+
+        if group_folder_confirm == 'yes':
+            create_shared_folder(groupname)
+    
     makehomespaces_confirm = pyip.inputYesNo("\nWould you like to create homespaces for each user automatically? (y) (n): ")
 
     try:
@@ -173,13 +177,10 @@ def single_user_add():
 
     # Ask user for group name
     group_confirm = pyip.inputYesNo("\nWould you like to add this user to a group? (y) (n): ")
-    
-    # Ask if homespace needs to be made
-    makehomespaces_confirm = pyip.inputYesNo("\nWould you like to create the homespace? (y) (n): ")
 
     if group_confirm == 'yes':
 
-        groupname = pyip.inputStr('Enter group name: ')
+        groupname = pyip.inputStr('\nEnter group name: ')
         result = client.group_find(cn=groupname)
         
         # print("group_find result: ")
@@ -194,6 +195,13 @@ def single_user_add():
 
             # create group
             client.group_add(groupname, groupdesc)
+
+        group_folder_confirm = pyip.inputYesNo("Would you like to create a shared folder for this group? (y) (n): ")
+
+        if group_folder_confirm == 'yes':
+            create_shared_folder(groupname)
+
+    makehomespaces_confirm = pyip.inputYesNo("\nWould you like to create the homespace? (y) (n): ")
 
     # Ask to proceed with given information
     confirm = pyip.inputYesNo('\nProceed? (y) (n): ')
@@ -218,6 +226,8 @@ def single_user_add():
 # -- End of Function Definitions -- #
 
 # -- Main -- #
+
+client.group_find()
 
 if args.file:
     csv_add()
