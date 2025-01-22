@@ -75,6 +75,29 @@ def group_add_user(username, groupname):
     print("Adding " + username + " to group " + groupname)
     client.group_add_member(groupname, user=username, no_members=True)
 
+# Create a group if it does not exist and ask if a shared folder needs to be created for said group
+def group_create():
+    groupname = pyip.inputStr('Enter group name: ')
+    result = client.group_find(cn=groupname)
+
+    if result['count'] == 0:
+    
+        print("No groups found, creating new group...\n")
+        print("Group: " + groupname)
+
+        groupdesc = pyip.inputStr('\nPlease enter a brief group description: ')
+
+        # create group
+        client.group_add(groupname, groupdesc)
+    
+    group_folder_confirm = pyip.inputYesNo("Would you like to create a shared folder for this group? (y) (n): ")
+    group_folder_type = pyip.inputChoice()
+
+    if group_folder_confirm == 'yes':
+        create_shared_folder(groupname)
+    
+    return groupname, group_folder_confirm
+
 # Create shared folder and set permissions
 def create_shared_folder(groupname):
     
@@ -98,26 +121,9 @@ def csv_add():
     
     group_confirm = pyip.inputYesNo("Would you like to add these users to a group? (y) (n): ")
     
-    if group_confirm == 'yes':
-        
-        groupname = pyip.inputStr('Enter group name: ')
-        result = client.group_find(cn=groupname)
+    if group_confirm == 'yes':        
+        groupname, group_folder_confirm = group_create()
 
-        if result['count'] == 0:
-        
-            print("No groups found, creating new group...\n")
-            print("Group: " + groupname)
-
-            groupdesc = pyip.inputStr('\nPlease enter a brief group description: ')
-
-            # create group
-            client.group_add(groupname, groupdesc)
-
-        group_folder_confirm = pyip.inputYesNo("Would you like to create a shared folder for this group? (y) (n): ")
-
-        if group_folder_confirm == 'yes':
-            create_shared_folder(groupname)
-    
     makehomespaces_confirm = pyip.inputYesNo("\nWould you like to create homespaces for each user automatically? (y) (n): ")
 
     try:
@@ -151,7 +157,7 @@ def csv_add():
                 if group_folder_confirm == 'yes':
                     # create group folder symlink to user's home directory
                     os.system('ln -s /shared/hpc /export/home/' + username + '/' + groupname)
-
+                    
     except FileNotFoundError:
         print(f"Error: The file '{args.file}' was not found.")
     except Exception as e:
@@ -179,27 +185,7 @@ def single_user_add():
     group_confirm = pyip.inputYesNo("\nWould you like to add this user to a group? (y) (n): ")
 
     if group_confirm == 'yes':
-
-        groupname = pyip.inputStr('\nEnter group name: ')
-        result = client.group_find(cn=groupname)
-        
-        # print("group_find result: ")
-        # print(result)
-
-        if result['count'] == 0:
-            
-            print("No groups found, creating new group...\n")
-            print("Creating group: " + groupname)
-
-            groupdesc = pyip.inputStr('\nEnter brief group description: ')
-
-            # create group
-            client.group_add(groupname, groupdesc)
-
-        group_folder_confirm = pyip.inputYesNo("Would you like to create a shared folder for this group? (y) (n): ")
-
-        if group_folder_confirm == 'yes':
-            create_shared_folder(groupname)
+        groupname, group_folder_confirm = group_create()
 
     makehomespaces_confirm = pyip.inputYesNo("\nWould you like to create the homespace? (y) (n): ")
 
@@ -221,13 +207,19 @@ def single_user_add():
         if makehomespaces_confirm == 'yes':
             makehomespaces(username)
 
+        if group_folder_confirm == 'yes':
+            # create group folder symlink to user's home directory
+            os.system('ln -s /shared/hpc /export/home/' + username + '/' + groupname)
+
         print("User added: " + username + " " + random_string)
 
 # -- End of Function Definitions -- #
 
 # -- Main -- #
 
-client.group_find()
+# To list existing groups from IPA, need to parse JSON
+# result = client.group_find()
+# print(result)
 
 if args.file:
     csv_add()
