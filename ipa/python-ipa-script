@@ -6,8 +6,7 @@
 #
 # INSTRUCTIONS:
 #
-#   To run the script: sudo -E ./python-ipa-script
-#   the -E flag is required to get the ipa password environment variable
+#   To run the script: sudo ./python-ipa-script
 #
 #   To provide a CSV file, use the --file flag (ex: sudo -E ./python-ipa-script --file students.csv)
 #   The format of the CSV file is expected to be: username, email, firstname, lastname, lastterm
@@ -68,6 +67,7 @@ def generate_password():
 # make home space in /export/home/<username>
 def makehomespaces(username):
     os.system('sudo mkdir /export/home/' + username)
+    os.system('sudo chown ' + username + ':' + username + ' /export/home/' + username)
     print("Created directory /export/home/" + username)
 
 # Add user to group
@@ -89,9 +89,11 @@ def group_create():
 
         # create group
         client.group_add(groupname, groupdesc)
+    else :
+        print("Existing group found, adding to it")
     
     group_folder_confirm = pyip.inputYesNo("Would you like to create a shared folder for this group? (y) (n): ")
-    group_folder_type = pyip.inputChoice()
+    # group_folder_type = pyip.inputChoice()
 
     if group_folder_confirm == 'yes':
         create_shared_folder(groupname)
@@ -121,16 +123,18 @@ def csv_add():
     
     group_confirm = pyip.inputYesNo("Would you like to add these users to a group? (y) (n): ")
     
+    makehomespaces_confirm = pyip.inputYesNo("\nWould you like to create homespaces for each user automatically? (This step is required if you wish to create a shared folder) (y) (n): ")
+
     if group_confirm == 'yes':        
         groupname, group_folder_confirm = group_create()
-
-    makehomespaces_confirm = pyip.inputYesNo("\nWould you like to create homespaces for each user automatically? (y) (n): ")
-
+    
     try:
         with open(args.file, mode='r') as csv_file:
             
             reader = csv.reader(csv_file)
             next(reader)
+
+            f.write('\n')
             
             for row in reader:
 
@@ -154,9 +158,10 @@ def csv_add():
                 if makehomespaces_confirm == 'yes':
                     makehomespaces(username)
 
-                if group_folder_confirm == 'yes':
-                    # create group folder symlink to user's home directory
-                    os.system('ln -s /shared/hpc /export/home/' + username + '/' + groupname)
+                    if group_folder_confirm == 'yes':
+                        # create group folder symlink to user's home directory
+                        os.system('ln -s /shared/' + groupname + ' /export/home/' + username + '/' + groupname)
+                        # os.system('sudo chgrp ' + groupname + ' /export/home/' + username + '/' + groupname)
                     
     except FileNotFoundError:
         print(f"Error: The file '{args.file}' was not found.")
