@@ -8,7 +8,7 @@ read servername
 echo 'Device {
   Name = '"${servername^}"'FileStorage
   Media Type = File
-  Archive Device = /mnt/backup/bareos/'"${servername}"'
+  Archive Device = /mnt/backup/bareos/
   LabelMedia = yes;                   # lets Bareos label unlabeled media
   Random Access = yes;
   AutomaticMount = yes;               # when device opened, read it
