@@ -8,7 +8,7 @@ read servername
 echo 'Device {
   Name = '"${servername^}"'FileStorage
   Media Type = File
-  Archive Device = /mnt/backup/bareos/
+  Archive Device = /mnt/backup/bareos/'"${servername}"'
   LabelMedia = yes;                   # lets Bareos label unlabeled media
   Random Access = yes;
   AutomaticMount = yes;               # when device opened, read it
@@ -18,9 +18,9 @@ echo 'Device {
 }
 ' > /etc/bareos/bareos-sd.d/device/"${servername^}"FileStorage.conf
 
-# mkdir /mnt/backup/bareos/${servername}
-# chown -R bareos:bareos /mnt/backup/bareos/${servername}
+mkdir /mnt/backup/bareos/${servername}
+chown -R bareos:bareos /mnt/backup/bareos/${servername}
 systemctl restart bareos-sd
 
-echo "Backup directory set to /mnt/backup/bareos/"
+echo "Backup directory created at /mnt/backup/bareos/${servername}"
 echo "Storage device configured at /etc/bareos/bareos-sd.d/device/${servername^}FileStorage.conf"
