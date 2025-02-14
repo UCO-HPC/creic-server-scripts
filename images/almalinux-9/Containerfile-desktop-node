@@ -1,0 +1,21 @@
+FROM localhost/compute-node:latest
+
+ADD https://raw.githubusercontent.com/TurboVNC/repo/main/TurboVNC.repo /etc/yum.repos.d/TurboVNC.repo
+
+RUN dnf update -y \
+    && dnf install -y --allowerasing \
+      @xfce \
+      libreoffice \
+      firefox \
+      python3-websockify \
+      turbovnc \
+    && dnf clean all
+
+RUN chmod u+w / # https://github.com/openhpc/ohpc/issues/2061
+
+COPY excludes /etc/warewulf/
+COPY container_exit.sh /etc/warewulf/
+
+CMD [ "/bin/echo", "-e", \
+      "This image is intended to be used with the UCO HPC cluster, Buddy 2.5.", \
+      "\n", ]
