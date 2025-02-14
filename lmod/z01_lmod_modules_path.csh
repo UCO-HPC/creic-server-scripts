@@ -1,1 +1,1 @@
-setenv MODULEPATH /etc/modulefiles:/usr/share/modulefiles
+setenv MODULEPATH /opt/modules/all:/opt/Buddy-Modules/all

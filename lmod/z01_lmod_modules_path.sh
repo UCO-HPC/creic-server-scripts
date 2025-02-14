@@ -1,1 +1,1 @@
-export MODULEPATH=/opt/modules/all
+export MODULEPATH=/opt/modules/all:/opt/Buddy-Modules/all
