@@ -191,6 +191,8 @@ def single_user_add():
 
     if group_confirm == 'yes':
         groupname, group_folder_confirm = group_create()
+    else:
+        group_folder_confirm = 'no'
 
     makehomespaces_confirm = pyip.inputYesNo("\nWould you like to create the homespace? (y) (n): ")
 
