@@ -9,6 +9,7 @@ RUN dnf update -y \
       firefox \
       python3-websockify \
       turbovnc \
+      xarchiver \
     && dnf clean all
 
 RUN chmod u+w / # https://github.com/openhpc/ohpc/issues/2061
