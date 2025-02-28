@@ -42,7 +42,7 @@ then
 	exit
 fi
 
-while IFS="," read -r node_name mac_1 mac_2 mac_3
+while IFS=";" read -r node_name mac_1 mac_2 mac_3
 do
 	# echo "Node name: $node_name"
 	# echo "ENO1 MAC: $mac_2"
@@ -54,4 +54,4 @@ do
 	
 	((nodenum+=1))
 	((dval+=1))
-done < <(tail -n +3 "$file")
+done < <(tail -n +2 "$file")
