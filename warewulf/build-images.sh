@@ -94,7 +94,7 @@ then
   exit 1
 fi
 
-sudo
+sudo echo
 
 if [[ ( $image == "all" || $image == "base" ) ]]
 then
