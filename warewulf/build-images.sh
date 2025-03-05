@@ -52,7 +52,7 @@ extract_equal_argument() {
 sudo_me() {
   while [ -f $sudo_stat ]; do
     sudo -v
-    sleep 5
+    sleep 3m
   done &
 }
 
