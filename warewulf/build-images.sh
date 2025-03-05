@@ -45,6 +45,18 @@ extract_equal_argument() {
 }
 
 ################################################################################
+# Sudo Heartbeat                                                               #
+################################################################################
+
+# From https://serverfault.com/questions/266039/temporarily-increasing-sudos-timeout-for-the-duration-of-an-install-script
+sudo_me() {
+  while [ -f $sudo_stat ]; do
+    sudo -v
+    sleep 5
+  done &
+}
+
+################################################################################
 ################################################################################
 # Main program                                                                 #
 ################################################################################
@@ -56,6 +68,13 @@ label=$(date +%Y-%m-%d-%H%M)
 
 color_on='\033[1;32m'
 color_off='\033[0m'
+
+# Setup marker file for sudo heartbeat
+sudo_stat=/hpcadmin/.sudo_status.txt
+
+echo $$ >> $sudo_stat
+trap 'rm -f $sudo_stat >/dev/null 2>&1' 0
+trap "exit 2" 1 2 3 15
 
 # Check arguments
 while [ $# -gt 0 ]; do
@@ -94,7 +113,9 @@ then
   exit 1
 fi
 
-sudo echo
+# Get sudo and start heartbeat
+sudo -v
+sudo_me
 
 if [[ ( $image == "all" || $image == "base" ) ]]
 then
@@ -120,3 +141,6 @@ do
   sudo wwctl container import --force file:///hpcadmin/$i-node-$label.tar $i-node-$label
   sudo wwctl container syncuser --write --build $i-node-$label
 done
+
+# Finish sudo loop
+rm $sudo_stat
