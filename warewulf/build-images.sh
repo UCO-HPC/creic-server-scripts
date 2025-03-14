@@ -101,7 +101,7 @@ while [ $# -gt 0 ]; do
                        temp=$2
                        shift
                      fi
-                     if [ $temp == "yes" || $temp == "Yes" ]; then
+                     if [[ ( $temp == "yes" || $temp == "Yes" ) ]]; then
                        NO_CACHE=""
                      fi;;
 
@@ -149,7 +149,7 @@ fi
 for i in $build 
 do
   echo -e ${color_on} "Building $i-node image..." ${color_off}
-  podman build $NO_CACHE --ulimit=host -f /opt/creic-server-scripts/images/almalinux-9/Containerfile-$i-node --tag $i-node --tag $i-node:$label
+  podman build $NO_CACHE -f /opt/creic-server-scripts/images/almalinux-9/Containerfile-$i-node --tag $i-node --tag $i-node:$label
   podman save localhost/$i-node:latest -o ~/$i-node-$label.tar
   sudo wwctl container import --force file:///hpcadmin/$i-node-$label.tar $i-node-$label
   sudo wwctl container syncuser --write --build $i-node-$label
