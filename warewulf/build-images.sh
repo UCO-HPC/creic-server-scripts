@@ -19,6 +19,8 @@ Help()
    echo "-h --help           Print this Help."
    echo "-v --verbose        Verbose mode."
    echo
+   echo "--use-cache=[ no | yes ]"
+   echo "                    Whether or not to use cached images. Default: no."
    echo "--label=YYYY-MM-DD-hhmm"
    echo "                    The date/time label for the image. Default: Current System Time."
    echo "--image=[ all | base | compute | desktop ]"
@@ -65,6 +67,7 @@ sudo_me() {
 # Set defaults
 image="all"
 label=$(date +%Y-%m-%d-%H%M)
+NO_CACHE="--no-cache "
 
 color_on='\033[1;32m'
 color_off='\033[0m'
@@ -90,6 +93,16 @@ while [ $# -gt 0 ]; do
                      elif has_space_argument $@; then
                        label=$2
                        shift
+                     fi;;
+
+    --use-cache*)    if has_equal_argument $@; then
+                       temp=$(extract_equal_argument $@)
+                     elif has_space_argument $@; then
+                       temp=$2
+                       shift
+                     fi
+                     if [ $temp == "yes" || $temp == "Yes" ]; then
+                       NO_CACHE=""
                      fi;;
 
     --image*)        if has_equal_argument $@; then
@@ -120,7 +133,7 @@ sudo_me
 if [[ ( $image == "all" || $image == "base" ) ]]
 then
   echo -e ${color_on} "Building AlmaLinux-9 base image..." ${color_off}
-  podman build --pull=newer --no-cache -f /opt/warewulf-node-images/almalinux-9/Containerfile --tag almalinux-9 --tag almalinux-9:$label
+  podman build --pull=newer $NO_CACHE -f /opt/warewulf-node-images/almalinux-9/Containerfile --tag almalinux-9 --tag almalinux-9:$label
 fi
 
 
@@ -136,7 +149,7 @@ fi
 for i in $build 
 do
   echo -e ${color_on} "Building $i-node image..." ${color_off}
-  podman build --no-cache -f /opt/creic-server-scripts/images/almalinux-9/Containerfile-$i-node --tag $i-node --tag $i-node:$label
+  podman build $NO_CACHE --ulimit=host -f /opt/creic-server-scripts/images/almalinux-9/Containerfile-$i-node --tag $i-node --tag $i-node:$label
   podman save localhost/$i-node:latest -o ~/$i-node-$label.tar
   sudo wwctl container import --force file:///hpcadmin/$i-node-$label.tar $i-node-$label
   sudo wwctl container syncuser --write --build $i-node-$label
