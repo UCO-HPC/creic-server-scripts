@@ -2,6 +2,8 @@ FROM localhost/compute-node:latest
 
 ADD https://raw.githubusercontent.com/TurboVNC/repo/main/TurboVNC.repo /etc/yum.repos.d/TurboVNC.repo
 
+RUN dnf install -y --allowerasing almalinux-release-devel
+
 RUN dnf update -y \
     && dnf install -y --allowerasing \
       @xfce \
@@ -10,6 +12,8 @@ RUN dnf update -y \
       python3-websockify \
       turbovnc \
       xarchiver \
+      redhat-lsb-core \
+      libnsl \
     && dnf clean all
 
 RUN chmod u+w / # https://github.com/openhpc/ohpc/issues/2061
