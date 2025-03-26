@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<policy target="ACCEPT">
+  <ingress-zone name="oob"/>
+  <ingress-zone name="ib"/>
+  <ingress-zone name="ipmi"/>
+  <egress-zone name="drawbridge"/>
+</policy>
