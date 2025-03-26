@@ -8,8 +8,8 @@ sudo mkdir /etc/node_exporter
 sudo chown node_exporter:node_exporter /etc/node_exporter
 
 # Unpacks Node Exporter Binary
-sudo tar -xvf node_exporter-1.8.2.darwin-amd64.tar.gz
-mv node_exporter-1.8.2.darwin-amd64.tar.gz node_exporter-files
+# sudo tar -xvf node_exporter-1.8.2.linux-amd64.tar.gz
+# mv node_exporter-1.8.2.linux-amd64.tar.gz node_exporter-files
 
 # Installs Node Exporter service
 sudo cp node_exporter-files/node_exporter /usr/bin/
