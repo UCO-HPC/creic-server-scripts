@@ -152,6 +152,7 @@ do
   podman build $NO_CACHE -f /opt/creic-server-scripts/images/almalinux-9/Containerfile-$i-node --tag $i-node --tag $i-node:$label
   podman save localhost/$i-node:latest -o ~/$i-node-$label.tar
   sudo wwctl container import --force file:///hpcadmin/$i-node-$label.tar $i-node-$label
+  rm ~/$i-node-$label.tar
   sudo wwctl container syncuser --write --build $i-node-$label
 done
 
