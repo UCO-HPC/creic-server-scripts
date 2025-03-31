@@ -2,5 +2,4 @@
 <zone target="ACCEPT">
   <short>IPMI</short>
   <description>IPMI Network. All network connections are accepted.</description>
-  <forward/>
 </zone>

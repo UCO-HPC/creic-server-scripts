@@ -3,6 +3,6 @@
   <ingress-zone name="oob"/>
   <ingress-zone name="ib"/>
   <ingress-zone name="ipmi"/>
-  <egress-zone name="drawbridge"/>
+  <egress-zone name="buddy-external"/>
   <masquerade/>
 </policy>

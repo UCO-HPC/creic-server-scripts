@@ -2,5 +2,4 @@
 <zone target="ACCEPT">
   <short>IB</short>
   <description>InfiniBand Network. All network connections are accepted.</description>
-  <forward/>
 </zone>

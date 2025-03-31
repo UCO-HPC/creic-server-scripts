@@ -9,6 +9,4 @@
   <service name="dhcpv6-client"/>
   <service name="rpc-bind"/>
   <port port="9000" protocol="tcp"/>
-  <masquerade/>
-  <forward/>
 </zone>

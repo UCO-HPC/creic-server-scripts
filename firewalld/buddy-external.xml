@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<zone target="default">
+  <short>buddy-external</short>
+  <description>Buddy-External Network. All network connections are accepted.</description>
+  <service name="ansys"/>
+  <service name="comsol"/>
+</zone>

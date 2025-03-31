@@ -2,5 +2,4 @@
 <zone target="ACCEPT">
   <short>OOB</short>
   <description>Out of band network. All network connections are accepted.</description>
-  <forward/>
 </zone>
