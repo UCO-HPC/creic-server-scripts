@@ -5,5 +5,7 @@
   <service name="ssh"/>
   <service name="http"/>
   <service name="https"/>
-  <masquerade/>
+  <interface name="nm-bond"/>
+  <interface name="enp4s0"/>
+  <interface name="enp4s0d1"/>
 </zone>
