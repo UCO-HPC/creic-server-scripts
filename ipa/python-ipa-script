@@ -37,6 +37,7 @@ import pyinputplus as pyip
 import os
 import random
 import string
+import typer
 
 # FreeIPA API initialization
 client = ClientLegacy('ipa.hpc.uco.edu', version='2.254')
@@ -53,21 +54,47 @@ parser.add_argument("--file", type=str, help="Path to the CSV file")
 args = parser.parse_args()
 
 # random password length
-pass_length = 8
+# pass_length = 8
 
 # -- End of Initialization -- #
 
 
 # -- Function Definitions -- #
 
-# Generates password with random letters and numbers of length pass_length
+# Helper function for generate_password
+def read_words(file_name):
+    with open(file_name, 'r') as f:
+        words = f.readlines()
+        words = [word.strip() for word in words]
+    return words
+
+# Generates random passphrase of 4 words
 def generate_password():
-    return ''.join(random.choices(string.ascii_letters + string.digits, k=pass_length))
+    words = read_words('word_list.txt')
+    word_bank = [words]
+    phrase_words = []
+
+    for i in range(0, 4):
+        random_word = random.SystemRandom().choice(words)
+        phrase_words.append(random_word)
+
+    passphrase = ''.join(phrase_words)
+    print(passphrase)
+    return passphrase
+    # return ''.join(random.choices(string.ascii_letters + string.digits, k=pass_length))
 
 # make home space in /export/home/<username>
 def makehomespaces(username):
+    
+    # Make the home folder
     os.system('sudo mkdir -p /export/home/' + username)
+    
+    # Make the user the owner of their home folder
     os.system('sudo chown ' + username + ':' + username + ' /export/home/' + username)
+    
+    # Set permissions so only the owner can access their home folder
+    os.system('sudo chmod 700 /export/home/' + username)
+    
     print("Created directory /export/home/" + username)
 
 # Add user to group
@@ -132,19 +159,21 @@ def csv_add():
         with open(args.file, mode='r') as csv_file:
             
             reader = csv.reader(csv_file)
-            next(reader)
+            #next(reader)
 
             f.write('\n')
             
             for row in reader:
 
-                # generate random password for each user with length "length"
+                # generate random passphrase for each user
                 random_string = generate_password()
-                username, email, firstname, lastname, lastterm = row
+                username, email, firstname, lastname = row
+                # username, firstname, lastname = row
                 fullname = firstname + " " + lastname
 
                 # For testing or if you added the wrong list, comment out user_add and uncomment user_del
-                client.user_add(username, firstname, lastname, fullname, mail = email, userpassword=random_string)
+                # client.user_add(username, firstname, lastname, fullname, mail = email, userpassword=random_string)
+                client.user_add(username, firstname, lastname, fullname, userpassword=random_string)
                 # client.user_del(username)
 
                 # append username to list
