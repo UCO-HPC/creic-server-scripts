@@ -154,6 +154,8 @@ def csv_add():
 
     if group_confirm == 'yes':        
         groupname, group_folder_confirm = group_create()
+    else:
+        group_folder_confirm = 'no'
     
     try:
         with open(args.file, mode='r') as csv_file:
