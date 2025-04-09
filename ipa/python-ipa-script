@@ -35,7 +35,7 @@ import argparse
 import csv
 import pyinputplus as pyip
 import os
-import random
+import secrets
 import string
 import typer
 
@@ -75,13 +75,12 @@ def generate_password():
     phrase_words = []
 
     for i in range(0, 4):
-        random_word = random.SystemRandom().choice(words)
+        random_word = secrets.SystemRandom().choice(words)
         phrase_words.append(random_word)
 
     passphrase = ''.join(phrase_words)
     print(passphrase)
     return passphrase
-    # return ''.join(random.choices(string.ascii_letters + string.digits, k=pass_length))
 
 # make home space in /export/home/<username>
 def makehomespaces(username):
@@ -143,7 +142,7 @@ def create_shared_folder(groupname):
     os.system('sudo setfacl -m d:u::rwx,d:g::rwx,d:o::--- /export/shared/' + groupname)
 
 # Read and process the CSV file if given
-# Begins adding users from CSV and exports a list of usernames that need home directories created on storage-01
+# Begins adding users from CSV and exports a list of usernames with their one-time temporary passwords
 def csv_add():
     
     print("CSV file provided, adding users from list...\n")
@@ -175,7 +174,9 @@ def csv_add():
 
                 # For testing or if you added the wrong list, comment out user_add and uncomment user_del
                 # client.user_add(username, firstname, lastname, fullname, mail = email, userpassword=random_string)
+                
                 client.user_add(username, firstname, lastname, fullname, userpassword=random_string)
+                
                 # client.user_del(username)
 
                 # append username to list
@@ -254,10 +255,6 @@ def single_user_add():
 # -- End of Function Definitions -- #
 
 # -- Main -- #
-
-# To list existing groups from IPA, need to parse JSON
-# result = client.group_find()
-# print(result)
 
 if args.file:
     csv_add()
