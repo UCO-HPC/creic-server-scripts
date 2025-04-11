@@ -173,10 +173,8 @@ def csv_add():
                 fullname = firstname + " " + lastname
 
                 # For testing or if you added the wrong list, comment out user_add and uncomment user_del
-                # client.user_add(username, firstname, lastname, fullname, mail = email, userpassword=random_string)
-                
-                client.user_add(username, firstname, lastname, fullname, userpassword=random_string)
-                
+                client.user_add(username, firstname, lastname, fullname, mail = email, userpassword=random_string)
+                 
                 # client.user_del(username)
 
                 # append username to list
